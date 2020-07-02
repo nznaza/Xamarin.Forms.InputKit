@@ -21,7 +21,7 @@ namespace Plugin.InputKit.Platforms.iOS
 {
     public class AutoCompleteViewRenderer : ViewRenderer<AutoCompleteView, UITextField>
     {
-        private AutoCompleteTextField NativeControl => (AutoCompleteTextField)Control;
+        private AutoCompleteTextField NativeControl { get => Control as AutoCompleteTextField; }
         private AutoCompleteView AutoCompleteEntry => (AutoCompleteView)Element;
 
         public AutoCompleteViewRenderer()
@@ -40,7 +40,7 @@ namespace Plugin.InputKit.Platforms.iOS
 
             if (Element != null)
             {
-                view.AttributedPlaceholder = new NSAttributedString(Element.Placeholder,null,Element.PlaceholderColor.ToUIColor());
+                view.AttributedPlaceholder = new NSAttributedString(Element.Placeholder, null, Element.PlaceholderColor.ToUIColor());
                 view.Text = Element.Text;
                 view.TextColor = Element.TextColor.ToUIColor();
             }
@@ -52,7 +52,7 @@ namespace Plugin.InputKit.Platforms.iOS
             base.Draw(rect);
             var scrollView = GetParentScrollView(Control);
             var ctrl = UIApplication.SharedApplication.GetTopViewController();
-            
+
             var relativePosition = UIApplication.SharedApplication.KeyWindow;
             var relativeFrame = NativeControl.Superview.ConvertRectToView(NativeControl.Frame, relativePosition);
             NativeControl.Draw(ctrl, Layer, scrollView, relativeFrame.Y);
@@ -64,7 +64,8 @@ namespace Plugin.InputKit.Platforms.iOS
             if (e.OldElement != null)
             {
                 // unsubscribe
-                NativeControl.AutoCompleteViewSource.Selected -= AutoCompleteViewSourceOnSelected;
+                if (NativeControl?.AutoCompleteViewSource != null)
+                    NativeControl.AutoCompleteViewSource.Selected -= AutoCompleteViewSourceOnSelected;
                 var elm = (AutoCompleteView)e.OldElement;
                 elm.CollectionChanged -= ItemsSourceCollectionChanged;
             }
