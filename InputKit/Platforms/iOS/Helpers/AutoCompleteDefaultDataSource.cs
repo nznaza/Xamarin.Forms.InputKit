@@ -9,7 +9,7 @@ namespace Plugin.InputKit.Platforms.iOS.Helpers
     {
         private const string _cellIdentifier = "DefaultIdentifier";
 
-        public override void UpdateSuggestions(ICollection<string> suggestions)
+        public override void UpdateSuggestions(ICollection<object> suggestions)
         {
             Suggestions = suggestions;
         }
@@ -23,7 +23,7 @@ namespace Plugin.InputKit.Platforms.iOS.Helpers
                 cell = new UITableViewCell(UITableViewCellStyle.Default, _cellIdentifier);
 
             cell.BackgroundColor = UIColor.Clear;
-            cell.TextLabel.Text = item;
+            cell.TextLabel.Text = item.ToString();
 
             return cell;
         }

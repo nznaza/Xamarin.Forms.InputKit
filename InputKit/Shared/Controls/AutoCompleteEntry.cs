@@ -15,16 +15,18 @@ namespace Plugin.InputKit.Shared.Controls
 
         }
 
-        public IEnumerable<string> ItemsSource { get => txtInput.ItemsSource; set => txtInput.ItemsSource = value; }
+        public IEnumerable<object> ItemsSource { get => txtInput.ItemsSource; set => txtInput.ItemsSource = value; }
 
         #region BindableProperties
         public static BindableProperty ItemsSourceProperty =
             BindableProperty.Create(
                 nameof(AutoCompleteView.ItemsSource),
-                typeof(IEnumerable<string>),
+                typeof(IEnumerable<object>),
                 typeof(AutoCompleteEntry),
-                propertyChanged: (bo, nv, ov) => (bo as AutoCompleteEntry).txtInput.ItemsSource = nv as IEnumerable<string>);
+                propertyChanged: (bo, nv, ov) => (bo as AutoCompleteEntry).txtInput.ItemsSource = nv as IEnumerable<object>);
         #endregion
+
+        public object SelectedItem => txtInput.SelectedItem; 
 
         private protected override Entry GetInputEntry()
         {
@@ -34,9 +36,9 @@ namespace Plugin.InputKit.Shared.Controls
                 VerticalOptions = LayoutOptions.CenterAndExpand,
             };
             txtInput.SortingAlgorithm = (text, options) => 
-                options
-                .Where(x => x.ToLowerInvariant().Contains(text.ToLowerInvariant()))
-                .OrderBy(o => o.StartsWith(text, StringComparison.CurrentCultureIgnoreCase) ? 0 : 1)
+                (options ?? new List<object>())
+                .Where(x => x.ToString().ToLowerInvariant().Contains(text.ToLowerInvariant()))
+                .OrderBy(o => o.ToString().StartsWith(text, StringComparison.CurrentCultureIgnoreCase) ? 0 : 1)
                 .ThenBy(t => t)
                 .ToList();
             return txtInput ;

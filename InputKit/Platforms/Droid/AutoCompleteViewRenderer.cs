@@ -34,11 +34,12 @@ namespace Plugin.InputKit.Platforms.Droid
         public AutoCompleteViewRenderer(Context context) : base(context)
         {
         }
-        
+
         private AppCompatAutoCompleteTextView NativeControl => Control?.EditText as AppCompatAutoCompleteTextView;
 
         protected override TextInputLayout CreateNativeControl()
         {
+
             var textInputLayout = new TextInputLayout(Context);
             var autoComplete = new AppCompatAutoCompleteTextView(Context)
             {
@@ -46,15 +47,18 @@ namespace Plugin.InputKit.Platforms.Droid
                 Text = Element?.Text,
                 Hint = Element?.Placeholder,
             };
+            textInputLayout.Hint = " ";
 
-            GradientDrawable gd = new GradientDrawable();
-            gd.SetColor(global::Android.Graphics.Color.Transparent);
-            autoComplete.SetBackground(gd);
+            //GradientDrawable gd = new GradientDrawable();
+            //gd.SetColor(global::Android.Graphics.Color.Transparent);
+            //autoComplete.SetBackground(gd);
             if (Element != null)
             {
                 autoComplete.SetHintTextColor(Element.PlaceholderColor.ToAndroid());
                 autoComplete.SetTextColor(Element.TextColor.ToAndroid());
             }
+            autoComplete.SetMaxLines(1);
+            autoComplete.InputType = InputTypes.ClassText;
             textInputLayout.AddView(autoComplete);
             return textInputLayout;
         }
@@ -77,7 +81,7 @@ namespace Plugin.InputKit.Platforms.Droid
                 SetItemsSource();
                 SetThreshold();
                 KillPassword();
-                NativeControl.TextChanged += (s, args) => Element.RaiseTextChanged(NativeControl.Text);
+                //NativeControl.TextChanged += NativeControl_TextChanged;
                 NativeControl.ItemClick += AutoCompleteOnItemSelected;
 
                 var elm = e.NewElement;
@@ -85,10 +89,40 @@ namespace Plugin.InputKit.Platforms.Droid
             }
         }
 
+        private void Element_TextChanged(object sender, Xamarin.Forms.TextChangedEventArgs e)
+        {
+            if (Element.Text != Control.EditText.Text)
+                Control.EditText.Text = Element.Text;
+        }
+
+        private void EditText_TextChanged(object sender, Android.Text.TextChangedEventArgs e)
+        {
+            if (Element.Text != Control.EditText.Text)
+                Element.Text = Control.EditText.Text;
+        }
+
+        private void NativeControl_TextChanged(object sender, Android.Text.TextChangedEventArgs e)
+        {
+            //Element.Focus();
+            //NativeControl.ShowDropDown();
+            //Element.RaiseTextChanged(NativeControl.Text);
+        }
+
         protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             base.OnElementPropertyChanged(sender, e);
+            if (e.PropertyName == Entry.TextProperty.PropertyName)
+            {
+                NativeControl.SetText(Element.Text, false);
+                Element.OnItemSelectedInternal(Element, new SelectedItemChangedEventArgs(null, -1));
+                if (!string.IsNullOrWhiteSpace(Element.Text) && Element.Text.Length >= Element.Threshold)
+                {
+                    NativeControl.ShowDropDown();
+                }
+                else
+                    NativeControl.DismissDropDown();
 
+            }
             if (e.PropertyName == Entry.IsPasswordProperty.PropertyName)
                 KillPassword();
             if (e.PropertyName == AutoCompleteView.ItemsSourceProperty.PropertyName)
@@ -100,8 +134,11 @@ namespace Plugin.InputKit.Platforms.Droid
         private void AutoCompleteOnItemSelected(object sender, AdapterView.ItemClickEventArgs args)
         {
             var view = (AutoCompleteTextView)sender;
-            var selectedItemArgs = new SelectedItemChangedEventArgs(view.Text);
+            Java.Lang.Object obj = view.Adapter.GetItem(args.Position);
+            var selectedItemArgs = new SelectedItemChangedEventArgs(obj.GetType().GetProperty("Instance").GetValue(obj, null), args.Position);
             var element = (AutoCompleteView)Element;
+            Element.Text = NativeControl.Text;
+            //Element.RaiseTextChanged(NativeControl.Text);
             element.OnItemSelectedInternal(Element, selectedItemArgs);
         }
 
@@ -149,14 +186,14 @@ namespace Plugin.InputKit.Platforms.Droid
 
     internal class BoxArrayAdapter : ArrayAdapter
     {
-        private readonly IList<string> _objects;
-        private readonly Func<string, ICollection<string>, ICollection<string>> _sortingAlgorithm;
+        private readonly IList<object> _objects;
+        private readonly Func<string, ICollection<object>, ICollection<object>> _sortingAlgorithm;
 
         public BoxArrayAdapter(
             Context context,
             int textViewResourceId,
-            List<string> objects,
-            Func<string, ICollection<string>, ICollection<string>> sortingAlgorithm) : base(context, textViewResourceId, objects)
+            List<object> objects,
+            Func<string, ICollection<object>, ICollection<object>> sortingAlgorithm) : base(context, textViewResourceId, objects)
         {
             _objects = objects;
             _sortingAlgorithm = sortingAlgorithm;
@@ -173,15 +210,15 @@ namespace Plugin.InputKit.Platforms.Droid
 
     internal class CustomFilter : Filter
     {
-        private readonly Func<string, ICollection<string>, ICollection<string>> _sortingAlgorithm;
+        private readonly Func<string, ICollection<object>, ICollection<object>> _sortingAlgorithm;
 
-        public CustomFilter(Func<string, ICollection<string>, ICollection<string>> sortingAlgorithm)
+        public CustomFilter(Func<string, ICollection<object>, ICollection<object>> sortingAlgorithm)
         {
             _sortingAlgorithm = sortingAlgorithm;
         }
 
         public BoxArrayAdapter Adapter { private get; set; }
-        public IList<string> Originals { get; set; }
+        public IList<object> Originals { get; set; }
 
         protected override FilterResults PerformFiltering(ICharSequence constraint)
         {
@@ -199,7 +236,7 @@ namespace Plugin.InputKit.Platforms.Droid
                 for (var index = 0; index < sorted.Count; index++)
                 {
                     var item = sorted[index];
-                    values.Add(item);
+                    values.Add((Java.Lang.Object)item);
                 }
 
                 results.Values = values;

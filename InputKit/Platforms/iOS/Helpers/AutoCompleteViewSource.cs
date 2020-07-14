@@ -10,11 +10,11 @@ namespace Plugin.InputKit.Platforms.iOS.Helpers
 {
     public abstract class AutoCompleteViewSource : UITableViewSource
     {
-        public ICollection<string> Suggestions { get; set; } = new List<string>();
+        public ICollection<object> Suggestions { get; set; } = new List<object>();
 
         public AutoCompleteTextField AutoCompleteTextField { get; set; }
 
-        public abstract void UpdateSuggestions(ICollection<string> suggestions);
+        public abstract void UpdateSuggestions(ICollection<object> suggestions);
 
         public abstract override UITableViewCell GetCell(UITableView tableView, NSIndexPath indexPath);
 
@@ -29,7 +29,7 @@ namespace Plugin.InputKit.Platforms.iOS.Helpers
         {
             AutoCompleteTextField.AutoCompleteTableView.Hidden = true;
             if (indexPath.Row < Suggestions.Count)
-                AutoCompleteTextField.Text = Suggestions.ElementAt(indexPath.Row);
+                AutoCompleteTextField.Text = Suggestions.ElementAt(indexPath.Row).ToString();
             AutoCompleteTextField.ResignFirstResponder();
             var item = Suggestions.ToList()[(int)indexPath.Item];
             Selected?.Invoke(tableView, new SelectedItemChangedEventArgs(item));

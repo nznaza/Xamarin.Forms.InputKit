@@ -27,7 +27,7 @@ namespace Plugin.InputKit.Platforms.Droid
             if (Effect != null)
                 Effect.Parent.OnPopupRequest += OnPopupRequest;
             
-            Context context = Config.CurrentActivity;            
+            Context context = Config.CurrentActivity;
             Context wrapper = new Android.Support.V7.View.ContextThemeWrapper(context, Resource.Style.MyPopupMenu);
 
             if (Control != null)

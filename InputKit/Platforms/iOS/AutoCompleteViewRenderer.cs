@@ -40,7 +40,7 @@ namespace Plugin.InputKit.Platforms.iOS
 
             if (Element != null)
             {
-                view.AttributedPlaceholder = new NSAttributedString(Element.Placeholder, null, Element.PlaceholderColor.ToUIColor());
+                view.AttributedPlaceholder = new NSAttributedString(Element.Placeholder ?? "", null, Element.PlaceholderColor.ToUIColor());
                 view.Text = Element.Text;
                 view.TextColor = Element.TextColor.ToUIColor();
             }
@@ -76,7 +76,7 @@ namespace Plugin.InputKit.Platforms.iOS
                 SetItemsSource();
                 SetThreshold();
                 KillPassword();
-                NativeControl.EditingChanged += (s, args) => Element.RaiseTextChanged(NativeControl.Text);
+                //NativeControl.EditingChanged += (s, args) => Element.RaiseTextChanged(NativeControl.Text);
 
                 var elm = (AutoCompleteView)e.NewElement;
                 elm.CollectionChanged += ItemsSourceCollectionChanged;
@@ -86,7 +86,28 @@ namespace Plugin.InputKit.Platforms.iOS
         protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             base.OnElementPropertyChanged(sender, e);
+            if (e.PropertyName == Entry.TextProperty.PropertyName)
+            {
+                if(NativeControl.Text != Element.Text)
+                {
+                    NativeControl.Text = Element.Text;
+                    Element.OnItemSelectedInternal(Element, new SelectedItemChangedEventArgs(null, -1));
+                    if (!string.IsNullOrWhiteSpace(Element.Text) && Element.Text.Length >= Element.Threshold)
+                    {
+                        NativeControl.ShowAutoCompleteView();
+                        NativeControl.UpdateTableViewData();
+                    }
+                    else
+                    {
+                        NativeControl.HideAutoCompleteView();
+                    }
+                }
+                else
+                {
+                    NativeControl.HideAutoCompleteView();
+                }
 
+            }
             if (e.PropertyName == Entry.IsPasswordProperty.PropertyName)
                 KillPassword();
             if (e.PropertyName == AutoCompleteView.ItemsSourceProperty.PropertyName)
@@ -129,6 +150,7 @@ namespace Plugin.InputKit.Platforms.iOS
 
         private void AutoCompleteViewSourceOnSelected(object sender, SelectedItemChangedEventArgs args)
         {
+            Element.Text = NativeControl.Text;
             AutoCompleteEntry.OnItemSelectedInternal(Element, args);
         }
     }

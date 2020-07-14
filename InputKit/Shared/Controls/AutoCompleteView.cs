@@ -9,21 +9,21 @@ namespace Plugin.InputKit.Shared.Controls
 {
     public class AutoCompleteView : Entry
     {
-        private static readonly Func<string, ICollection<string>, ICollection<string>> _defaultSortingAlgorithm = (t, d) => d;
+        private static readonly Func<string, ICollection<object>, ICollection<object>> _defaultSortingAlgorithm = (t, d) => d;
         public AutoCompleteView()
         {
             
         }
 
         public static readonly BindableProperty SortingAlgorithmProperty = BindableProperty.Create(nameof(SortingAlgorithm),
-            typeof(Func<string, ICollection<string>, ICollection<string>>),
+            typeof(Func<string, ICollection<object>, ICollection<object>>),
             typeof(AutoCompleteView),
             _defaultSortingAlgorithm);
 
         public static readonly BindableProperty ItemsSourceProperty = BindableProperty.Create(nameof(ItemsSource),
-            typeof(IEnumerable<string>),
+            typeof(IEnumerable<object>),
             typeof(AutoCompleteView),
-            default(IEnumerable<string>), propertyChanged: OnItemsSourcePropertyChangedInternal);
+            default(IEnumerable<object>), propertyChanged: OnItemsSourcePropertyChangedInternal);
 
         public static readonly BindableProperty SelectedItemProperty = BindableProperty.Create(nameof(SelectedItem),
             typeof(object),
@@ -47,9 +47,9 @@ namespace Plugin.InputKit.Shared.Controls
         ///     .ToList();
         /// ]]>
         /// </example>
-        public Func<string, ICollection<string>, ICollection<string>> SortingAlgorithm
+        public Func<string, ICollection<object>, ICollection<object>> SortingAlgorithm
         {
-            get { return (Func<string, ICollection<string>, ICollection<string>>)GetValue(SortingAlgorithmProperty); }
+            get { return (Func<string, ICollection<object>, ICollection<object>>)GetValue(SortingAlgorithmProperty); }
             set { SetValue(SortingAlgorithmProperty, value); }
         }
 
@@ -74,9 +74,9 @@ namespace Plugin.InputKit.Shared.Controls
         /// <summary>
         ///     Drop Down List Items Source. This is a bindable property.
         /// </summary>
-        public IEnumerable<string> ItemsSource
+        public IEnumerable<object> ItemsSource
         {
-            get { return (IEnumerable<string>)GetValue(ItemsSourceProperty); }
+            get { return (IEnumerable<object>)GetValue(ItemsSourceProperty); }
             set { SetValue(ItemsSourceProperty, value); }
         }
 

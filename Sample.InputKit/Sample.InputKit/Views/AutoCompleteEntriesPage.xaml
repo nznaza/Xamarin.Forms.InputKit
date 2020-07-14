@@ -18,8 +18,7 @@
                 IconImage="ic_account_balance_black"
                 IsRequired="True"
                 Placeholder="Start writing xamarin"
-                TextColor="Black"
-                ValidationMessage="Is not valid" />
+                ValidationMessage="Is not valid" CornerRadius="0" BackgroundColor="Black" TextColor="White" />
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

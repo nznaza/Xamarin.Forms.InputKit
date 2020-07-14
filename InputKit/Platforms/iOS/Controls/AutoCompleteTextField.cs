@@ -17,11 +17,11 @@ namespace Plugin.InputKit.Platforms.iOS.Controls
         private AutoCompleteViewSource _autoCompleteViewSource;
         private UIView _background;
         private CGRect _drawnFrame;
-        private List<string> _items;
+        private List<object> _items;
         private UIViewController _parentViewController;
         private UIScrollView _scrollView;
 
-        public Func<string, ICollection<string>, ICollection<string>> SortingAlgorithm { get; set; } = (t, d) => d;
+        public Func<string, ICollection<object>, ICollection<object>> SortingAlgorithm { get; set; } = (t, d) => d;
 
         public AutoCompleteViewSource AutoCompleteViewSource
         {
@@ -134,7 +134,7 @@ namespace Plugin.InputKit.Platforms.iOS.Controls
             }
         }
 
-        private void ShowAutoCompleteView()
+        public void ShowAutoCompleteView()
         {
             _background.Hidden = false;
             AutoCompleteTableView.Hidden = false;
@@ -144,7 +144,7 @@ namespace Plugin.InputKit.Platforms.iOS.Controls
             }
         }
 
-        private void HideAutoCompleteView()
+        public void HideAutoCompleteView()
         {
             _background.Hidden = true;
             AutoCompleteTableView.Hidden = true;
@@ -168,7 +168,7 @@ namespace Plugin.InputKit.Platforms.iOS.Controls
             _background.Frame = frame;
         }
 
-        public void UpdateItems(List<string> items)
+        public void UpdateItems(List<object> items)
         {
             _items = items;
             AutoCompleteViewSource.UpdateSuggestions(items);
