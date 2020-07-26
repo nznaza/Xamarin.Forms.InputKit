@@ -1,6 +1,6 @@
 ﻿using Android.Content;
 using Android.OS;
-using Android.Support.V7.Widget;
+using AndroidX.AppCompat.Widget;
 using Plugin.InputKit.Platforms.Droid;
 using System.Linq;
 using Xamarin.Forms;
@@ -28,7 +28,7 @@ namespace Plugin.InputKit.Platforms.Droid
                 Effect.Parent.OnPopupRequest += OnPopupRequest;
             
             Context context = Config.CurrentActivity;
-            Context wrapper = new Android.Support.V7.View.ContextThemeWrapper(context, Resource.Style.MyPopupMenu);
+            Context wrapper = new Android.Views.ContextThemeWrapper(context, Resource.Style.MyPopupMenu);
 
             if (Control != null)
             {

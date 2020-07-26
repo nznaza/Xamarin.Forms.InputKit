@@ -259,10 +259,8 @@ namespace Plugin.InputKit.Platforms.iOS.Helpers
         }
 
         public static UIFont ToUIFont(this Label label)
-
         {
-            var values = label.GetValues(Label.FontFamilyProperty, Label.FontSizeProperty, Label.FontAttributesProperty);
-            return ToUIFont((string)values[0], (float)(double)values[1], (FontAttributes)values[2]) ??
+            return ToUIFont((string)label.GetValue(Label.FontFamilyProperty), (float)label.GetValue(Label.FontSizeProperty), (FontAttributes)label.GetValue(Label.FontAttributesProperty)) ??
                    UIFont.SystemFontOfSize(UIFont.LabelFontSize);
         }
 

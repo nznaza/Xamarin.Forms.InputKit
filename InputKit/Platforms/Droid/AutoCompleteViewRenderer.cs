@@ -1,9 +1,6 @@
 ﻿using System.ComponentModel;
 using Android.Content;
 using Android.Content.Res;
-using Android.Support.Design.Widget;
-using Android.Support.V4.View;
-using Android.Support.V7.Widget;
 using Android.Text;
 using Android.Text.Method;
 using Android.Util;
@@ -25,6 +22,8 @@ using System;
 using System.Linq;
 using System.Collections;
 using Android.Graphics.Drawables;
+using AndroidX.AppCompat.Widget;
+using Google.Android.Material.TextField;
 
 [assembly: ExportRenderer(typeof(AutoCompleteView), typeof(AutoCompleteViewRenderer))]
 namespace Plugin.InputKit.Platforms.Droid
